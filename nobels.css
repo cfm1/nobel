@@ -1,0 +1,84 @@
+p {
+    color: hotpink;
+}
+
+.year {
+    max-width: 3em;
+}
+
+#radiobuttons {
+    display: none;
+    margin-left: 22%;
+    padding: 10px;
+}
+
+.tg {
+    font-family: Merriweather;
+    font-size: 14px;
+    padding: 10px 10px;
+    overflow: hidden;
+}
+
+.top {
+    border: none;
+}
+
+.intro td {
+    border: none;
+}
+
+.tg th {
+    font-family: Raleway;
+    font-size: 50px;
+    font-weight: normal;
+    padding: 10px 5px;
+    overflow: hidden;
+    word-break: normal;
+}
+
+.th1 {
+    font-family: Raleway;
+    color: blue;
+    border-color: black;
+    border: solid;
+    border-collapse: collapse;
+}
+
+.borderbox {
+    color: black;
+    border: solid;
+    border-collapse: collapse;
+}
+
+.tab {
+    position: relative;
+    display: block;
+    margin-left: 25%;
+    padding-top: 10px;
+    border-collapse: collapse;
+}
+
+.tab td {
+    padding: 10px;
+}
+
+.testp {
+    color: aqua;
+    height: 50px;
+}
+
+.answers {
+    position: relative;
+    margin-left: 15%
+}
+
+.resultstable {
+    padding: 20px;
+    color: black;
+    padding: 10px;
+    width: 90%;
+}
+
+.resultstable td {
+    padding: 10px;
+}

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width" initial-scale="1.0">
+
+    <link rel="stylesheet" type="text/css" href="./nobels.css">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Tangerine|Krub|Raleway|Merriweather">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
+    <link rel="stylesheet" href="./normalize.css">
+
+</head>
+
+<body>
+
+    <!--small header paragraph for spacing-->
+    <div class="testp">
+        <p></p>
+    </div>
+
+    <!--table to pick categories-->
+    <div class="tab">
+        <table class="tg">
+            <tr>
+                <th class="top" colspan="3">Nobel Laureates</th>
+            </tr>
+            <tr class="intro">
+                <td colspan="3">This page displays all nobel laureates from 1901, the year of the award's foundation, to 2018.
+                    <br>Select relevant categories, and then click the Submit button</td>
+            </tr>
+            <tr class="tg">
+                <td class="th1">Input range of years</td>
+                <td class="th1">Select Category</td>
+                <td class="th1">Enter country keyword</td>
+            </tr>
+            <tr class="tg">
+                <td class="borderbox">
+                    <p>Start year:
+                        <input class="year" type="text" id="start" pattern="^(19|20)\d{2}" $value="">
+                        <br><br>
+                        <input type="range" id="startRange" min="1901" max="2018">
+                    </p>
+
+                    <p>End year:
+                        <input class="year" type="text" id="end" pattern="^(19|20)\d{2}" $value="">
+                        <br><br>
+                        <input type="range" id="endRange" min="1901" max="2018">
+                    </p>
+                    <br>
+                </td>
+
+                <td class="borderbox">
+                    <select type="select" id="category">
+                        <option value="">All categories</option>
+                        <option value="medicine">Medicine</option>
+                        <option value="literature">Literature</option>
+                        <option value="peace">Peace</option>
+                        <option value="physics">Physics</option>
+                        <option value="chemistry">Chemistry</option>
+                    </select>
+                </td>
+
+                <td class="borderbox">
+                    <p>Country of birth:
+                        <input type=text id="country"></p>
+                    <br>
+                </td>
+            </tr>
+            <tr>
+                <td class="intro" colspan="3">
+                    <div id="radiobuttons">
+                        <p>Gender:</p>
+                        <input type="radio" name="radio" value="male" id="gendermale"> Male
+                        <input type="radio" name="radio" value="female" id="genderfemale"> Female
+                        <input type="radio" name="radio" value="other" id="allgender"> All
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="borderbox">
+                    <button id="submitBtn">Submit</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <br>
+    <br>
+
+    <!--div to display results-->
+    <div class="answers">
+        <p id="id04"></p>
+    </div>
+
+
+
+
+    <script>
+        (function() {
+            'use strict'
+            var xmlhttp = new XMLHttpRequest();
+            var laureateObj = "";
+            xmlhttp.open("GET", "nobelWinners.json", true);
+            if (xmlhttp.readyState != 4)
+                xmlhttp.send();
+            document.addEventListener("DOMContentLoaded", init);
+
+            function init() {
+                var start = document.getElementById("start");
+                var startRange = document.getElementById("startRange");
+                // here using an arrow function
+                start.addEventListener("change", () => {
+                    if (validateYear(start))
+                        updateRange(start, startRange);
+                }, false);
+                startRange.addEventListener("change", function() {
+                    updateYear(start, startRange);
+                }, false);
+
+                var end = document.getElementById("end");
+                var endRange = document.getElementById("endRange");
+                end.addEventListener("change", function() {
+                    if (validateYear(end))
+                        updateRange(end, endRange);
+                }, false);
+                endRange.addEventListener("change", function() {
+                    updateYear(end, endRange);
+                }, false);
+                var submit = document.getElementById("submitBtn");
+                submit.addEventListener("click", function() {
+                    if (checkUserData(start, end)) {
+                        doSubmit(start, end)
+                    }
+                }, false);
+            }
+
+            function checkUserData(start, end) {
+                var answer = document.getElementById("id04");
+                var isValid = true;
+                if (xmlhttp.readyState != 4 || xmlhttp.status != 200) {
+                    answer.innerHTML = "JSON File for laureates not loaded";
+                    isValid = false;
+                }
+                if (!validateYear(start) || !validateYear(end)) {
+                    answer.innerHTML = "Invalid Start or End";
+                    isValid = false;
+                }
+                if (parseInt(start.value) > parseInt(end.value)) {
+                    answer.innerHTML = "End year must be later than start year"
+                    isValid = false
+                }
+                return isValid;
+            }
+
+            function doSubmit(start, end) {
+                var answer = document.getElementById("id04");
+                toggleRadioButtons();
+                if (laureateObj == "") {
+                    console.log("NOT Parsed");
+                    laureateObj = JSON.parse(xmlhttp.responseText);
+                }
+                var category = document.getElementById("category").value;
+                var country = document.getElementById("country").value;
+                var gender = "";
+                if (document.getElementById('gendermale').checked)
+                    gender = "m";
+                else {
+                    if (document.getElementById('genderfemale').checked)
+                        gender = "f";
+                }
+                if (start.value == "") {
+                    start.value = 2018;
+                    start.dispatchEvent(new Event('change'));
+                }
+                if (end.value == "") {
+                    end.value = 2018;
+                    end.dispatchEvent(new Event('change'));
+                }
+                var laureateArr =
+                    filterLaureates(laureateObj.laureates, start.value, end.value, category, country, gender);
+                if (laureateArr === undefined || laureateArr.length == 0)
+                    answer.innerHTML = "No laureates match these criteria";
+                else
+                    show(laureateArr);
+            }
+
+            function validateYear(yearEl) {
+                var isValid = true;
+                document.getElementById("id04").innerHTML = "";
+                if (yearEl.checkValidity() == false) {
+                    document.getElementById("id04").innerHTML = "Invalid Year";
+                    isValid = false;
+                }
+                return isValid;
+            }
+
+            function updateYear(year, range) {
+                year.value = range.value;
+            }
+
+            function updateRange(year, range) {
+                range.value = year.value;
+            }
+
+
+            //function setDisplay() code taken from Web Dev practical 4, e5_solution.html
+            //purpose of this function is to hide the radio buttons until results have been shown
+            function toggleRadioButtons() {
+                var panel = document.getElementById("radiobuttons");
+                if (panel.style.display == "block")
+                    panel.style.display = "none";
+                else
+                    panel.style.display = "block";
+
+            };
+
+
+
+            function show(laureateArr) {
+                var answer = document.getElementById("id04");
+                var printInfo = "<table class=\"resultstable\"><tr><th>Year</th><th>Name</th><th>Category</th><th>Gender</th><th>Born in</th></tr>";
+                var printthis = ""
+                for (var i = 0; i < laureateArr.length; i++) {
+                    printthis += ("<tr><td>" + laureateArr[i].prizes[0].year + "</td><td>" + laureateArr[i].firstname + " " + laureateArr[i].surname + "</td><td>" + laureateArr[i].prizes[0].category + "</td><td>" + laureateArr[i].gender + "</td><td>" + laureateArr[i].bornCountry + "</td><td id=" + laureateArr[i].id + " ><button onclick=\"moreInformation(" + laureateArr[i].id + ",FunctionOne())\")\">More Information</button><td></tr>");
+                    //console.log(printthis)
+                };
+                printInfo += printthis + "</table>";
+                answer.innerHTML = printInfo;
+            };
+
+            function moreInformation(elem, obj) {
+                var idnumber = parseInt(elem);
+                var moreInfoArray = [];
+                var parray = '{"laureates":[' + obj + ']}';
+                var y = JSON.parse(parray);
+                //console.log("y: ", y)
+                var moreArray = y.laureates;
+                var moreInfo = ""
+                    //for each index in the parsed Json:
+
+                for (var i = 0; i < moreArray.length; i++) {
+                    var id = moreArray[i].id;
+                    if (id == idnumber) {
+                        var sample = moreArray[i];
+                        var affsample = moreArray[i].prizes[0].affiliations[0]
+                        var death = moreArray[i].died;
+                        //        if (death=== undefined ||death == "0000-00-00"){death == "Not relevant/not known"}; 
+
+                        moreInfo += ("<p>Year of birth: " + moreArray[i].born + "<br>Motivation: " + moreArray[i].prizes[0].motivation);
+                        //if (sample.hasOwnProperty('died')){
+                        if (death != "0000-00-00") {
+                            moreInfo += "<br>Died in: " + moreArray[i].died
+                        };
+                        if (sample.hasOwnProperty('bornCity')) {
+                            moreInfo += "<br>City of birth: " + moreArray[i].bornCity
+                        };
+                        if (affsample.hasOwnProperty('name')) {
+                            moreInfo += "<br>Affiliation: " + moreArray[i].prizes[0].affiliations[0].name + ", " + moreArray[i].prizes[0].affiliations[0].city
+                        };
+                    }
+                    moreInfo += "</p>"
+                };
+                document.getElementById(idnumber).innerHTML = moreInfo;
+
+            };
+
+
+            function filterLaureates(laureateArr, startYr, endYr, category, country, gender) {
+                laureateArr = filterYear(laureateArr, parseInt(startYr), parseInt(endYr));
+                if (category != "")
+                    laureateArr = filterCategory(laureateArr, category)
+                if (country != "")
+                    laureateArr = filterCountry(laureateArr, country)
+                if (gender != "")
+                    laureateArr = filterGender(laureateArr, gender);
+                laureateArr.sort((a, b) => a.prizes[0].year - b.prizes[0].year);
+                return laureateArr;
+            };
+
+            function filterYear(laureateArr, startYr, endYr) {
+                var result = [];
+                for (var i = 0; i < laureateArr.length; i++) {
+                    for (var n = 0; n < laureateArr[i].prizes.length; n++) {
+                        var year = laureateArr[i].prizes[n].year;
+                        if (year >= startYr && year <= endYr) {
+                            result.push(laureateArr[i]);
+                        }
+                    }
+                }
+                return result;
+            };
+
+
+            function filterCategory(laureateArr, category) {
+                if (category == "")
+                    return laureateArr;
+                var result = [];
+                for (var i = 0; i < laureateArr.length; i++) {
+                    var catg = laureateArr[i].prizes[0].category;
+                    if (catg == category)
+                        result.push(laureateArr[i]);
+                };
+                return result;
+            };
+
+            function filterCountry(laureateArr, country) {
+                if (country == "")
+                    return laureateArr;
+                var result = []
+                var regex = new RegExp(country, 'gi');
+                for (var i = 0; i < laureateArr.length; i++) {
+                    if (laureateArr[i].hasOwnProperty('bornCountry') &&
+                        laureateArr[i].bornCountry.match(regex) != null)
+                        result.push(laureateArr[i])
+                }
+                return result;
+            };
+
+
+            function filterGender(laureateArr, gender) {
+                if (gender == "")
+                    return laureateArr;
+                var result = []
+                for (var i = 0; i < laureateArr.length; i++) {
+                    if (gender == "m" && laureateArr[i].gender == "male")
+                        result.push(laureateArr[i]);
+                    else
+                    if (gender == "f" && laureateArr[i].gender == "female")
+                        result.push(laureateArr[i]);
+                }
+                return result;
+            };
+
+        }())
+    </script>
+
+</body>
+
+</html>
