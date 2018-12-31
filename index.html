@@ -61,7 +61,7 @@
                     <p>
                         <input type="radio" name="gender" value="male" id="gendermale"> Male
                         <input type="radio" name="gender" value="female" id="genderfemale"> Female
-                        <input type="radio" name="gender" value="other" id="allgender"> All
+                        <input type="radio" name="gender" value="" id="allgender"> All
                     </p>
                 </td>
             </tr>
@@ -80,11 +80,14 @@
         <p id="id04"></p>
     </div>
 
+
+
     <script>
         (function(globalObj) {
             'use strict'
 
             var laureateObj = {};
+            var display = document.getElementById("id04");
             var filterObj = {};
             var xmlhttp = new XMLHttpRequest();
 
@@ -144,25 +147,38 @@
             }
 
             function checkUserInput(start, end) {
-                var message = document.getElementById("id04");
                 var isValid = true;
                 if (xmlhttp.readyState != 4 || xmlhttp.status != 200) {
-                    message.innerHTML = "JSON File for laureates not loaded";
+                    display.textContent = "JSON File for laureates not loaded";
                     isValid = false;
                 }
-                if (!validateYear(start) || !validateYear(end)) {
-                    message.innerHTML = "Invalid Start or End";
+                if (!validateYear(start)) {
+                    display.textContent = "Invalid Start Year";
                     isValid = false;
                 }
+                if (!validateYear(end)) {
+                    display.textContent = "Invalid End Year";
+                    isValid = false;
+                }
+
+                if (end.value == "") {
+                    end.value = 2018;
+                    end.dispatchEvent(new Event('change'));
+                }
+
+                if (start.value == "") {
+                    start.value = end.value;
+                    start.dispatchEvent(new Event('change'));
+                }
+
                 if (parseInt(start.value) > parseInt(end.value)) {
-                    message.innerHTML = "End year must be later than start year"
+                    display.textContent = "End year must be later than start year"
                     isValid = false
                 }
                 return isValid;
             }
 
             function doSubmit(start, end) {
-                var display = document.getElementById("id04");
                 if (!laureateObj.hasOwnProperty('laureates')) {
                     console.log("NOT Parsed");
                     laureateObj = JSON.parse(xmlhttp.responseText);
@@ -176,14 +192,7 @@
                     if (document.getElementById('genderfemale').checked)
                         gender = "f";
                 }
-                if (start.value == "") {
-                    start.value = 2018;
-                    start.dispatchEvent(new Event('change'));
-                }
-                if (end.value == "") {
-                    end.value = 2018;
-                    end.dispatchEvent(new Event('change'));
-                }
+
                 if (isFilterChanged(start.value, end.value, category, country, gender)) {
                     filterObj.start = parseInt(start.value);
                     filterObj.end = parseInt(end.value);
@@ -193,11 +202,13 @@
                     var laureateArr =
                         filterLaureates(laureateObj.laureates, filterObj);
                     if (laureateArr.length == 0)
-                        display.innerHTML = "No laureates match these criteria";
+                        display.textContent = "No laureates match these criteria";
                     else {
                         var prizeArr = buildPrizeArray(laureateArr, filterObj);
-                        var table = buildPrizeTable(prizeArr);
-                        display.innerHTML = table;
+                        while (display.hasChildNodes()) {
+                            display.removeChild(display.lastChild);
+                        }
+                        display.appendChild(buildPrizeTable(prizeArr));
                     }
                 }
                 toggleGenderCol();
@@ -227,34 +238,46 @@
             function validateYear(yearEl) {
                 var isValid = true;
                 if (yearEl.checkValidity() == false) {
-                    document.getElementById("id04").innerHTML = "Invalid Year";
+                    display.textContent = "Invalid Year";
                     isValid = false;
                 }
                 return isValid;
             }
 
             function moreInformation(prizeId, prizeIndex) {
-                var moreInfo = "";
+                var moreElmnt = {};
                 var laureate = getLaureate(prizeId);
                 if (laureate != "") {
                     var prize = laureate.prizes[prizeIndex];
-                    moreInfo = "<p class=\"moreinfo\">Year of birth: " + laureate.born;
-                    if (laureate.hasOwnProperty('bornCity'))
-                        moreInfo += "<br>City of birth: " + laureate.bornCity;
-                    if (laureate.died != "0000-00-00")
-                        moreInfo += "<br>Died in: " + laureate.died;
-                    moreInfo += "<br>Motivation: " + prize.motivation;
+                    var infoElmnt = document.createElement("p");
+                    infoElmnt.setAttribute("class", "moreInfo");
+                    if (laureate.born != "0000-00-00")
+                        infoElmnt.appendChild(document.createTextNode("Year of birth: " + laureate.born));
+                    if (laureate.hasOwnProperty('bornCity')) {
+                        infoElmnt.appendChild(document.createElement("br"));
+                        infoElmnt.appendChild(document.createTextNode("City of birth: " + laureate.bornCity));
+                    }
+                    if (laureate.died != "0000-00-00") {
+                        infoElmnt.appendChild(document.createElement("br"));
+                        infoElmnt.appendChild(document.createTextNode("Died in:  " + laureate.died));
+                    }
+                    if (prize.hasOwnProperty('motivation')) {
+                        infoElmnt.appendChild(document.createElement("br"));
+                        infoElmnt.appendChild(document.createTextNode("Motivation: " + prize.motivation));
+                    }
+
                     for (var i = 0; i < prize.affiliations.length; i++) {
                         var nm = prize.affiliations[i].name == undefined ? "" : prize.affiliations[i].name;
                         var city = prize.affiliations[i].city == undefined ? "" : prize.affiliations[i].city;
                         if (nm != "" && city != "") {
-                            moreInfo += "<br>Affiliation: " +
-                                nm + ", " + city;
+                            infoElmnt.appendChild(document.createElement("br"));
+                            infoElmnt.appendChild(document.createTextNode("Affiliation: " + nm + ", " + city));
                         }
                     };
-                    moreInfo += "</p>"
-                    return moreInfo;
+                    if (infoElmnt.textContent && infoElmnt.textContent.length > 0)
+                        moreElmnt = infoElmnt;
                 }
+                return moreElmnt;
             };
 
             function buildPrizeArray(laureateArr, filterObj) {
@@ -277,35 +300,50 @@
                 return prizeArr.sort((a, b) => a.year - b.year);
             }
 
+            function createTH(content) {
+                var th = document.createElement("th");
+                th.textContent = content;
+                return th;
+            }
+
             function buildPrizeTable(prizeArr) {
-                var table = "<table class=\"resultstable\" >" +
-                    "<thead>" +
-                    "<tr>" +
-                    "<th>Year</th>" +
-                    "<th class=\"resultname\">Name</th>" +
-                    "<th>Category</th>" +
-                    "<th>Gender</th>" +
-                    "<th>Born in</th>" +
-                    "<th></th>" +
-                    "</tr>" +
-                    "</thead>" +
-                    "<tbody>"
+                var table = document.createElement("table");
+                table.setAttribute("class", "resultstable");
+
+                var tHead = table.createTHead();
+                var tr = tHead.insertRow(0);
+
+                tr.appendChild(createTH("Year"));
+                var thName = tr.appendChild(createTH("Name"));
+                thName.setAttribute("class", "resultname");
+                tr.appendChild(createTH("Category"));
+                tr.appendChild(createTH("Gender"));
+                tr.appendChild(createTH("Born in"));
+                tr.appendChild(createTH("Details"));
+
                 for (var i = 0; i < prizeArr.length; i++) {
-                    var row = ("<tr><td>" + prizeArr[i].year +
-                        "</td><td class=\"resultname\">" + prizeArr[i].laureate.firstname + " " +
-                        prizeArr[i].laureate.surname +
-                        "</td><td>" + prizeArr[i].category +
-                        "</td><td>" + prizeArr[i].laureate.gender +
-                        "</td><td>" + prizeArr[i].laureate.bornCountry +
-                        "</td><td class=\"more\">" +
-                        "<details>" +
-                        "<summary>More... </summary>" +
-                        moreInformation(prizeArr[i].laureate.id, prizeArr[i].prizeIndex) +
-                        "</details>" +
-                        "</tr>");
-                    table += row;
-                };
-                table += "</tbody></table>";
+                    var tr = table.insertRow(i + 1);
+                    tr.insertCell(0).textContent = prizeArr[i].year;
+                    var nm = tr.insertCell(1);
+                    nm.setAttribute("class", "resultname");
+                    nm.textContent = prizeArr[i].laureate.firstname + " " +
+                        prizeArr[i].laureate.surname;
+                    tr.insertCell(2).textContent = prizeArr[i].category;
+                    tr.insertCell(3).textContent = prizeArr[i].laureate.gender;
+                    tr.insertCell(4).textContent = prizeArr[i].laureate.bornCountry;
+
+                    var tdMore = tr.insertCell(5);
+                    var detailEl = document.createElement("details");
+                    tdMore.appendChild(detailEl);
+                    var summaryEl = document.createElement("summary");
+                    detailEl.appendChild(summaryEl);
+                    var moreDetails = moreInformation(prizeArr[i].laureate.id, prizeArr[i].prizeIndex);
+                    if (moreDetails instanceof HTMLElement) {
+                        summaryEl.textContent = "More...";
+                        detailEl.appendChild(moreDetails);
+                    } else
+                        summaryEl.textContent = "N/A";
+                }
                 return table;
             };
 
