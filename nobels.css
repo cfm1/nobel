@@ -1,19 +1,10 @@
-p {
-    color: hotpink;
-}
-
-select {
-    color: hotpink;
-}
-
 .year {
     max-width: 3em;
 }
 
 .gendercol {
     visibility: hidden;
-    /* margin-left: 22%; */
-    /* padding: 10px; */
+    border: none;
 }
 
 .tg {
@@ -27,10 +18,6 @@ select {
     border: none;
 }
 
-.intro td {
-    border: none;
-}
-
 .tg th {
     font-family: Raleway;
     font-size: 50px;
@@ -38,14 +25,6 @@ select {
     padding: 10px 5px;
     overflow: hidden;
     word-break: normal;
-}
-
-.th1 {
-    font-family: Raleway;
-    color: blue;
-    border-color: black;
-    border: solid;
-    border-collapse: collapse;
 }
 
 .borderbox {
@@ -64,11 +43,6 @@ select {
 
 .tab td {
     padding: 10px;
-}
-
-.testp {
-    color: aqua;
-    height: 50px;
 }
 
 .answers {
@@ -116,7 +90,6 @@ td {
 
 .more {
     text-align: center;
-    /* width: 20em; */
     margin-right: 0px;
     padding-right: 0px;
 }
