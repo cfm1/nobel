@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<head>
+<header>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width" initial-scale="1.0">
 
@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
     <link rel="stylesheet" href="./normalize.css">
 
-</head>
+</header>
 
 <body>
 
@@ -34,17 +34,18 @@
                 <td class="th1">Input range of years</td>
                 <td class="th1">Select Category</td>
                 <td class="th1">Enter country keyword</td>
+                <td class="th1">Gender</td>
             </tr>
             <tr class="tg">
                 <td class="borderbox">
                     <p>Start year:
-                        <input class="year" type="text" id="start" pattern="^(19|20)\d{2}" $value="">
+                        <input class="year" type="text" id="start" pattern="^(19|20)\d{2}" value="">
                         <br><br>
                         <input type="range" id="startRange" min="1901" max="2018">
                     </p>
 
                     <p>End year:
-                        <input class="year" type="text" id="end" pattern="^(19|20)\d{2}" $value="">
+                        <input class="year" type="text" id="end" pattern="^(19|20)\d{2}" value="">
                         <br><br>
                         <input type="range" id="endRange" min="1901" max="2018">
                     </p>
@@ -59,6 +60,7 @@
                         <option value="peace">Peace</option>
                         <option value="physics">Physics</option>
                         <option value="chemistry">Chemistry</option>
+                        <option value="economics">Economics</option>
                     </select>
                 </td>
 
@@ -67,17 +69,18 @@
                         <input type=text id="country"></p>
                     <br>
                 </td>
-            </tr>
-            <tr>
-                <td class="intro" colspan="3">
+
+                <td class="borderbox">
                     <div id="radiobuttons">
-                        <p>Gender:</p>
-                        <input type="radio" name="radio" value="male" id="gendermale"> Male
-                        <input type="radio" name="radio" value="female" id="genderfemale"> Female
-                        <input type="radio" name="radio" value="other" id="allgender"> All
+                        <p>
+                            <input type="radio" name="radio" value="male" id="gendermale"> Male
+                            <input type="radio" name="radio" value="female" id="genderfemale"> Female
+                            <input type="radio" name="radio" value="other" id="allgender"> All
+                        </p>
                     </div>
                 </td>
             </tr>
+
             <tr>
                 <td class="borderbox">
                     <button id="submitBtn">Submit</button>
@@ -98,8 +101,12 @@
 
 
     <script>
-        (function() {
+        (function(globalObj) {
             'use strict'
+            globalObj.moreInformation = function(prizeId, prizeIndex) {
+                moreInformation(prizeId, prizeIndex);
+            };
+
             var xmlhttp = new XMLHttpRequest();
             var laureateObj = "";
             xmlhttp.open("GET", "nobelWinners.json", true);
@@ -112,51 +119,64 @@
                 var startRange = document.getElementById("startRange");
                 // here using an arrow function
                 start.addEventListener("change", () => {
+                    console.log(" change .. inner function for validateYear created");
                     if (validateYear(start))
-                        updateRange(start, startRange);
+                        startRange.value = start.value;
                 }, false);
                 startRange.addEventListener("change", function() {
-                    updateYear(start, startRange);
+                    console.log(" change .. inner function for start range created");
+                    start.value = startRange.value;
                 }, false);
 
                 var end = document.getElementById("end");
                 var endRange = document.getElementById("endRange");
                 end.addEventListener("change", function() {
+                    console.log(" change .. inner function for validateYear created");
                     if (validateYear(end))
-                        updateRange(end, endRange);
+                        endRange.value = end.value;
                 }, false);
                 endRange.addEventListener("change", function() {
-                    updateYear(end, endRange);
+                    console.log(" change .. inner function for end range created");
+                    end.value = endRange.value;
                 }, false);
                 var submit = document.getElementById("submitBtn");
                 submit.addEventListener("click", function() {
-                    if (checkUserData(start, end)) {
+                    if (checkUserInput(start, end)) {
                         doSubmit(start, end)
                     }
                 }, false);
             }
 
-            function checkUserData(start, end) {
-                var answer = document.getElementById("id04");
+            function getLaureate(laureateId) {
+                var result = "";
+                var laureateArr = laureateObj.laureates;
+                for (var i = 0; i < laureateArr.length; i++) {
+                    if (laureateArr[i].id == laureateId)
+                        result = laureateArr[i];
+                }
+                return result;
+            }
+
+            function checkUserInput(start, end) {
+                var message = document.getElementById("id04");
                 var isValid = true;
                 if (xmlhttp.readyState != 4 || xmlhttp.status != 200) {
-                    answer.innerHTML = "JSON File for laureates not loaded";
+                    message.innerHTML = "JSON File for laureates not loaded";
                     isValid = false;
                 }
                 if (!validateYear(start) || !validateYear(end)) {
-                    answer.innerHTML = "Invalid Start or End";
+                    message.innerHTML = "Invalid Start or End";
                     isValid = false;
                 }
                 if (parseInt(start.value) > parseInt(end.value)) {
-                    answer.innerHTML = "End year must be later than start year"
+                    message.innerHTML = "End year must be later than start year"
                     isValid = false
                 }
                 return isValid;
             }
 
             function doSubmit(start, end) {
-                var answer = document.getElementById("id04");
-                toggleRadioButtons();
+                var display = document.getElementById("id04");
                 if (laureateObj == "") {
                     console.log("NOT Parsed");
                     laureateObj = JSON.parse(xmlhttp.responseText);
@@ -180,10 +200,13 @@
                 }
                 var laureateArr =
                     filterLaureates(laureateObj.laureates, start.value, end.value, category, country, gender);
-                if (laureateArr === undefined || laureateArr.length == 0)
-                    answer.innerHTML = "No laureates match these criteria";
-                else
-                    show(laureateArr);
+                if (laureateArr.length == 0)
+                    display.innerHTML = "No laureates match these criteria";
+                else {
+                    var prizeArr = buildPrizeArray(laureateArr, start.value, end.value, category);
+                    var table = buildPrizeTable(prizeArr);
+                    display.innerHTML = table;
+                }
             }
 
             function validateYear(yearEl) {
@@ -196,74 +219,65 @@
                 return isValid;
             }
 
-            function updateYear(year, range) {
-                year.value = range.value;
-            }
-
-            function updateRange(year, range) {
-                range.value = year.value;
-            }
-
-
-            //function setDisplay() code taken from Web Dev practical 4, e5_solution.html
-            //purpose of this function is to hide the radio buttons until results have been shown
-            function toggleRadioButtons() {
-                var panel = document.getElementById("radiobuttons");
-                if (panel.style.display == "block")
-                    panel.style.display = "none";
-                else
-                    panel.style.display = "block";
-
-            };
-
-
-
-            function show(laureateArr) {
-                var answer = document.getElementById("id04");
-                var printInfo = "<table class=\"resultstable\"><tr><th>Year</th><th>Name</th><th>Category</th><th>Gender</th><th>Born in</th></tr>";
-                var printthis = ""
-                for (var i = 0; i < laureateArr.length; i++) {
-                    printthis += ("<tr><td>" + laureateArr[i].prizes[0].year + "</td><td>" + laureateArr[i].firstname + " " + laureateArr[i].surname + "</td><td>" + laureateArr[i].prizes[0].category + "</td><td>" + laureateArr[i].gender + "</td><td>" + laureateArr[i].bornCountry + "</td><td id=" + laureateArr[i].id + " ><button onclick=\"moreInformation(" + laureateArr[i].id + ",FunctionOne())\")\">More Information</button><td></tr>");
-                    //console.log(printthis)
-                };
-                printInfo += printthis + "</table>";
-                answer.innerHTML = printInfo;
-            };
-
-            function moreInformation(elem, obj) {
-                var idnumber = parseInt(elem);
-                var moreInfoArray = [];
-                var parray = '{"laureates":[' + obj + ']}';
-                var y = JSON.parse(parray);
-                //console.log("y: ", y)
-                var moreArray = y.laureates;
-                var moreInfo = ""
-                    //for each index in the parsed Json:
-
-                for (var i = 0; i < moreArray.length; i++) {
-                    var id = moreArray[i].id;
-                    if (id == idnumber) {
-                        var sample = moreArray[i];
-                        var affsample = moreArray[i].prizes[0].affiliations[0]
-                        var death = moreArray[i].died;
-                        //        if (death=== undefined ||death == "0000-00-00"){death == "Not relevant/not known"}; 
-
-                        moreInfo += ("<p>Year of birth: " + moreArray[i].born + "<br>Motivation: " + moreArray[i].prizes[0].motivation);
-                        //if (sample.hasOwnProperty('died')){
-                        if (death != "0000-00-00") {
-                            moreInfo += "<br>Died in: " + moreArray[i].died
-                        };
-                        if (sample.hasOwnProperty('bornCity')) {
-                            moreInfo += "<br>City of birth: " + moreArray[i].bornCity
-                        };
-                        if (affsample.hasOwnProperty('name')) {
-                            moreInfo += "<br>Affiliation: " + moreArray[i].prizes[0].affiliations[0].name + ", " + moreArray[i].prizes[0].affiliations[0].city
-                        };
-                    }
+            function moreInformation(prizeId, prizeIndex) {
+                var laureate = getLaureate(prizeId);
+                if (laureate != "") {
+                    var prize = laureate.prizes[prizeIndex];
+                    var moreInfo = "<p class=\"moreinfo\">Year of birth: " + laureate.born;
+                    if (laureate.hasOwnProperty('bornCity'))
+                        moreInfo += "<br>City of birth: " + laureate.bornCity;
+                    if (laureate.died != "0000-00-00")
+                        moreInfo += "<br>Died in: " + laureate.died;
+                    moreInfo += "<br>Motivation: " + prize.motivation;
+                    for (var i = 0; i < prize.affiliations.length; i++) {
+                        var nm = prize.affiliations[i].name == undefined ? "" : prize.affiliations[i].name;
+                        var city = prize.affiliations[i].city == undefined ? "" : prize.affiliations[i].city;
+                        if (nm != "" && city != "") {
+                            moreInfo += "<br>Affiliation: " +
+                                nm + ", " + city;
+                        }
+                    };
                     moreInfo += "</p>"
-                };
-                document.getElementById(idnumber).innerHTML = moreInfo;
+                    document.getElementById(prizeId + "-" + prizeIndex).innerHTML = moreInfo;
+                }
+            };
 
+            function buildPrizeArray(laureateArr, startYr, endYr, category) {
+                var prizeArr = [];
+                for (var i = 0; i < laureateArr.length; i++) {
+                    for (var n = 0; n < laureateArr[i].prizes.length; n++) {
+                        if (laureateArr[i].prizes[n].year >= startYr &&
+                            laureateArr[i].prizes[n].year <= endYr &&
+                            (category == "" || category == laureateArr[i].prizes[n].category)) {
+                            var lPrize = {};
+                            lPrize.laureate = laureateArr[i];
+                            lPrize.prizeIndex = n;
+                            lPrize.year = laureateArr[i].prizes[n].year;
+                            lPrize.category = laureateArr[i].prizes[n].category;
+                            prizeArr.push(lPrize);
+                        }
+                    }
+                };
+                return prizeArr.sort((a, b) => a.year - b.year);
+            }
+
+            function buildPrizeTable(prizeArr) {
+                var table = "<table class=\"resultstable\"><tr><th>Year</th><th>Name</th><th>Category</th><th>Gender</th><th>Born in</th></tr>";
+                for (var i = 0; i < prizeArr.length; i++) {
+                    var row = ("<tr><td>" + prizeArr[i].year +
+                        "</td><td class=\"resultname\">" + prizeArr[i].laureate.firstname + " " +
+                        prizeArr[i].laureate.surname +
+                        "</td><td>" + prizeArr[i].category +
+                        "</td><td>" + prizeArr[i].laureate.gender +
+                        "</td><td>" + prizeArr[i].laureate.bornCountry +
+                        "</td><td class=\"more\" id=" + prizeArr[i].laureate.id + "-" + prizeArr[i].prizeIndex + ">" +
+                        "<button onclick=\"moreInformation(" + prizeArr[i].laureate.id + "," + prizeArr[i].prizeIndex + ")\">" +
+                        "More...</button></td>" +
+                        "</tr>");
+                    table += row;
+                };
+                table += "</table>";
+                return table;
             };
 
 
@@ -272,68 +286,51 @@
                 if (category != "")
                     laureateArr = filterCategory(laureateArr, category)
                 if (country != "")
-                    laureateArr = filterCountry(laureateArr, country)
-                if (gender != "")
-                    laureateArr = filterGender(laureateArr, gender);
-                laureateArr.sort((a, b) => a.prizes[0].year - b.prizes[0].year);
+                    laureateArr = laureateArr.filter((laureate) => {
+                        var regex = new RegExp(country, 'gi');
+                        return laureate.hasOwnProperty('bornCountry') &&
+                            laureate.bornCountry.match(regex) != null;
+                    });
+                if (gender != "") {
+                    laureateArr = laureateArr.filter(function(laureate) {
+                        return (gender == "m" && laureate.gender == "male") ||
+                            (gender == "f" && laureate.gender == "female")
+                    });
+                }
                 return laureateArr;
             };
 
             function filterYear(laureateArr, startYr, endYr) {
                 var result = [];
                 for (var i = 0; i < laureateArr.length; i++) {
+                    var validYear = false;
                     for (var n = 0; n < laureateArr[i].prizes.length; n++) {
-                        var year = laureateArr[i].prizes[n].year;
-                        if (year >= startYr && year <= endYr) {
-                            result.push(laureateArr[i]);
-                        }
+                        var y = laureateArr[i].prizes[n].year;
+                        if (y >= startYr && y <= endYr)
+                            validYear = true;
                     }
+                    if (validYear)
+                        result.push(laureateArr[i]);
                 }
                 return result;
             };
-
 
             function filterCategory(laureateArr, category) {
                 if (category == "")
                     return laureateArr;
                 var result = [];
                 for (var i = 0; i < laureateArr.length; i++) {
-                    var catg = laureateArr[i].prizes[0].category;
-                    if (catg == category)
+                    var validCategory = false;
+                    for (var n = 0; n < laureateArr[i].prizes.length; n++) {
+                        if (laureateArr[i].prizes[n].category == category)
+                            validCategory = true;
+                    }
+                    if (validCategory)
                         result.push(laureateArr[i]);
                 };
                 return result;
             };
-
-            function filterCountry(laureateArr, country) {
-                if (country == "")
-                    return laureateArr;
-                var result = []
-                var regex = new RegExp(country, 'gi');
-                for (var i = 0; i < laureateArr.length; i++) {
-                    if (laureateArr[i].hasOwnProperty('bornCountry') &&
-                        laureateArr[i].bornCountry.match(regex) != null)
-                        result.push(laureateArr[i])
-                }
-                return result;
-            };
-
-
-            function filterGender(laureateArr, gender) {
-                if (gender == "")
-                    return laureateArr;
-                var result = []
-                for (var i = 0; i < laureateArr.length; i++) {
-                    if (gender == "m" && laureateArr[i].gender == "male")
-                        result.push(laureateArr[i]);
-                    else
-                    if (gender == "f" && laureateArr[i].gender == "female")
-                        result.push(laureateArr[i]);
-                }
-                return result;
-            };
-
-        }())
+        }(this))
     </script>
 
 </body>

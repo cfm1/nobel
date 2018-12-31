@@ -6,11 +6,12 @@ p {
     max-width: 3em;
 }
 
-#radiobuttons {
+
+/* #radiobuttons {
     display: none;
     margin-left: 22%;
     padding: 10px;
-}
+} */
 
 .tg {
     font-family: Merriweather;
@@ -73,12 +74,33 @@ p {
 }
 
 .resultstable {
-    padding: 20px;
+    border-collapse: collapse;
     color: black;
     padding: 10px;
     width: 90%;
+    text-align: left;
 }
 
-.resultstable td {
+.resultstable th,
+td {
+    text-align: left;
     padding: 10px;
+}
+
+.resultstable tr:nth-child(even) {
+    background: rgb(204, 220, 228);
+}
+
+.resultstable tr:nth-child(odd) {
+    background: #FFF;
+}
+
+.resultname {
+    width: 30em;
+}
+
+.more {
+    text-align: right;
+    margin-right: 0px;
+    padding-right: 0px;
 }
