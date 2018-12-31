@@ -65,7 +65,6 @@
 .resultstable th,
 td {
     text-align: left;
-    /* padding: 10px; */
     border: 1px solid rgb(190, 190, 190);
     padding: 10px 20px;
 }
@@ -81,15 +80,8 @@ td {
 .moreinfo {
     text-align: left;
     width: 20em;
-    color: rgb(0, 0, 0);
 }
 
 .resultname {
     width: 20em;
-}
-
-.more {
-    text-align: center;
-    margin-right: 0px;
-    padding-right: 0px;
 }
