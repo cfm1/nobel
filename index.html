@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 
-<header>
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width" initial-scale="1.0">
 
@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
     <link rel="stylesheet" href="./normalize.css">
 
-</header>
+</head>
 
 <body>
 
@@ -34,7 +34,7 @@
                 <td class="th1">Input range of years</td>
                 <td class="th1">Select Category</td>
                 <td class="th1">Enter country keyword</td>
-                <td class="th1">Gender</td>
+                <td class="th1 gendercol">Gender</td>
             </tr>
             <tr class="tg">
                 <td class="borderbox">
@@ -67,17 +67,14 @@
                 <td class="borderbox">
                     <p>Country of birth:
                         <input type=text id="country"></p>
-                    <br>
                 </td>
 
-                <td class="borderbox">
-                    <div id="radiobuttons">
-                        <p>
-                            <input type="radio" name="radio" value="male" id="gendermale"> Male
-                            <input type="radio" name="radio" value="female" id="genderfemale"> Female
-                            <input type="radio" name="radio" value="other" id="allgender"> All
-                        </p>
-                    </div>
+                <td class="borderbox gendercol">
+                    <p>
+                        <input type="radio" name="radio" value="male" id="gendermale"> Male
+                        <input type="radio" name="radio" value="female" id="genderfemale"> Female
+                        <input type="radio" name="radio" value="other" id="allgender"> All
+                    </p>
                 </td>
             </tr>
 
@@ -107,36 +104,44 @@
                 moreInformation(prizeId, prizeIndex);
             };
 
+            var laureateObj = {};
+            var filterObj = {};
             var xmlhttp = new XMLHttpRequest();
-            var laureateObj = "";
+
             xmlhttp.open("GET", "nobelWinners.json", true);
             if (xmlhttp.readyState != 4)
                 xmlhttp.send();
-            document.addEventListener("DOMContentLoaded", init);
+            if (document.readyState === "loading")
+                document.addEventListener("DOMContentLoaded", init);
+            else
+                init();
+
 
             function init() {
+                filterObj.start = 0;
+                filterObj.end = 0;
+                filterObj.category = "";
+                filterObj.country = "";
+                filterObj.gender = "";
+
                 var start = document.getElementById("start");
                 var startRange = document.getElementById("startRange");
                 // here using an arrow function
                 start.addEventListener("change", () => {
-                    console.log(" change .. inner function for validateYear created");
                     if (validateYear(start))
                         startRange.value = start.value;
                 }, false);
                 startRange.addEventListener("change", function() {
-                    console.log(" change .. inner function for start range created");
                     start.value = startRange.value;
                 }, false);
 
                 var end = document.getElementById("end");
                 var endRange = document.getElementById("endRange");
                 end.addEventListener("change", function() {
-                    console.log(" change .. inner function for validateYear created");
                     if (validateYear(end))
                         endRange.value = end.value;
                 }, false);
                 endRange.addEventListener("change", function() {
-                    console.log(" change .. inner function for end range created");
                     end.value = endRange.value;
                 }, false);
                 var submit = document.getElementById("submitBtn");
@@ -177,7 +182,7 @@
 
             function doSubmit(start, end) {
                 var display = document.getElementById("id04");
-                if (laureateObj == "") {
+                if (!laureateObj.hasOwnProperty('laureates')) {
                     console.log("NOT Parsed");
                     laureateObj = JSON.parse(xmlhttp.responseText);
                 }
@@ -198,20 +203,48 @@
                     end.value = 2018;
                     end.dispatchEvent(new Event('change'));
                 }
-                var laureateArr =
-                    filterLaureates(laureateObj.laureates, start.value, end.value, category, country, gender);
-                if (laureateArr.length == 0)
-                    display.innerHTML = "No laureates match these criteria";
-                else {
-                    var prizeArr = buildPrizeArray(laureateArr, start.value, end.value, category);
-                    var table = buildPrizeTable(prizeArr);
-                    display.innerHTML = table;
+                if (checkSelectionChange(start.value, end.value, category, country, gender)) {
+                    console.log("Selection changed");
+                    var laureateArr =
+                        filterLaureates(laureateObj.laureates, filterObj);
+                    if (laureateArr.length == 0)
+                        display.innerHTML = "No laureates match these criteria";
+                    else {
+                        var prizeArr = buildPrizeArray(laureateArr, start.value, end.value, category);
+                        var table = buildPrizeTable(prizeArr);
+                        display.innerHTML = table;
+                    }
                 }
+                toggleGenderCol();
             }
+
+            function checkSelectionChange(startYr, endYr, category, country, gender) {
+                var answer = startYr != filterObj.start || endYr != filterObj.end ||
+                    category != filterObj.category || country != filterObj.country ||
+                    gender != filterObj.gender;
+                if (answer) {
+                    filterObj.start = startYr;
+                    filterObj.end = endYr;
+                    filterObj.category = category;
+                    filterObj.country = country;
+                    filterObj.gender = gender;
+                }
+                return answer;
+            }
+
+            function toggleGenderCol() {
+                var e = document.getElementsByClassName("gendercol");
+                for (var i = 0; i < e.length; i++) {
+                    if (e[i].style.visibility != 'visible')
+                        e[i].style.visibility = 'visible';
+                    else
+                        e[i].style.visibility = 'hidden';
+                }
+            };
+
 
             function validateYear(yearEl) {
                 var isValid = true;
-                document.getElementById("id04").innerHTML = "";
                 if (yearEl.checkValidity() == false) {
                     document.getElementById("id04").innerHTML = "Invalid Year";
                     isValid = false;
@@ -262,7 +295,8 @@
             }
 
             function buildPrizeTable(prizeArr) {
-                var table = "<table class=\"resultstable\"><tr><th>Year</th><th>Name</th><th>Category</th><th>Gender</th><th>Born in</th></tr>";
+                var table = "<table class=\"resultstable\">" +
+                    "<tr><th>Year</th><th>Name</th><th>Category</th><th>Gender</th><th>Born in</th><th></th></tr>";
                 for (var i = 0; i < prizeArr.length; i++) {
                     var row = ("<tr><td>" + prizeArr[i].year +
                         "</td><td class=\"resultname\">" + prizeArr[i].laureate.firstname + " " +
@@ -281,20 +315,22 @@
             };
 
 
-            function filterLaureates(laureateArr, startYr, endYr, category, country, gender) {
-                laureateArr = filterYear(laureateArr, parseInt(startYr), parseInt(endYr));
-                if (category != "")
-                    laureateArr = filterCategory(laureateArr, category)
-                if (country != "")
+
+
+            function filterLaureates(laureateArr, filterObj) {
+                laureateArr = filterYear(laureateArr, filterObj.start, filterObj.end);
+                if (filterObj.category != "")
+                    laureateArr = filterCategory(laureateArr, filterObj.category)
+                if (filterObj.country != "")
                     laureateArr = laureateArr.filter((laureate) => {
-                        var regex = new RegExp(country, 'gi');
+                        var regex = new RegExp(filterObj.country, 'gi');
                         return laureate.hasOwnProperty('bornCountry') &&
                             laureate.bornCountry.match(regex) != null;
                     });
-                if (gender != "") {
+                if (filterObj.gender != "") {
                     laureateArr = laureateArr.filter(function(laureate) {
-                        return (gender == "m" && laureate.gender == "male") ||
-                            (gender == "f" && laureate.gender == "female")
+                        return (filterObj.gender == "m" && laureate.gender == "male") ||
+                            (filterObj.gender == "f" && laureate.gender == "female")
                     });
                 }
                 return laureateArr;
