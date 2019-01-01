@@ -1,2 +1,2 @@
-# nobel project: forked
+# nobel project
 
