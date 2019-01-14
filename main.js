@@ -10,30 +10,29 @@
         init();
 
     function init() {
-        display = document.getElementById("id04");
+        display = document.getElementById("display");
         let start = document.getElementById("start");
         let startRange = document.getElementById("startRange");
-        // here using an arrow function
         start.addEventListener("change", () => {
             if (validateYear(start))
                 startRange.value = start.value;
         }, false);
-        startRange.addEventListener("change", function() {
+        startRange.addEventListener("change", () => {
             start.value = startRange.value;
         }, false);
 
         let end = document.getElementById("end");
         let endRange = document.getElementById("endRange");
-        end.addEventListener("change", function() {
+        end.addEventListener("change", () => {
             if (validateYear(end))
                 endRange.value = end.value;
         }, false);
-        endRange.addEventListener("change", function() {
+        endRange.addEventListener("change", () => {
             end.value = endRange.value;
         }, false);
 
         let submit = document.getElementById("submitBtn");
-        submit.addEventListener("click", function() {
+        submit.addEventListener("click", () => {
             if (checkUserInput(start, end)) {
                 doSubmit(start, end)
             }
@@ -51,15 +50,6 @@
             isValid = false;
         }
 
-        if (end.value == "") {
-            end.value = 2018;
-            end.dispatchEvent(new Event('change'));
-        }
-
-        if (start.value == "") {
-            start.value = end.value;
-            start.dispatchEvent(new Event('change'));
-        }
 
         if (isValid && parseInt(start.value) > parseInt(end.value)) {
             display.textContent = "End year must be later than start year"
@@ -73,6 +63,17 @@
             display.textContent = "Laureate data not loaded";
             return;
         }
+
+        if (end.value == "") {
+            end.value = 2018;
+            end.dispatchEvent(new Event('change'));
+        }
+
+        if (start.value == "") {
+            start.value = end.value;
+            start.dispatchEvent(new Event('change'));
+        }
+
         let category = document.getElementById("category").value;
         let country = document.getElementById("country").value;
         let gender = "";
@@ -97,24 +98,7 @@
                 display.appendChild(nobelWinners.buildPrizeTable(prizeArr));
             }
         }
-        toggleGenderCol();
     }
-
-
-    // Bug in IE requires setting border
-    function toggleGenderCol() {
-        let e = document.getElementsByClassName("gendercol");
-        for (let i = 0; i < e.length; i++) {
-            if (e[i].style.visibility != 'visible') {
-                e[i].style.visibility = 'visible';
-                e[i].style.border = "solid";
-            } else {
-                e[i].style.visibility = 'hidden';
-                e[i].style.border = "none";
-            }
-        }
-    };
-
 
     function validateYear(yearEl) {
         let isValid = true;

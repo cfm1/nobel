@@ -18,70 +18,56 @@
 </head> -->
 
 <body>
-    <div class="tab">
-        <table class="tg">
-            <tr>
-                <th class="top" colspan="3">Nobel Laureates</th>
-            </tr>
-            <tr>
-                <td class="top" colspan="3">This page displays all nobel laureates from 1901, the year of the award's foundation, to 2018.
-                </td>
-            </tr>
+    <h1> Nobel Laureates</h1>
+    <h2> This page displays all nobel laureates from 1901, the year of the award"s foundation, to 2018.</h2>
 
-            <tr class="tg">
-                <td class="borderbox">
-                    <p>Start year:
-                        <input class="year" type="text" id="start" pattern="^(19|20)\d{2}" value="">
-                        <br><br>
-                        <input type="range" id="startRange" min="1901" max="2018">
-                    </p>
+    <div class="filter-container">
+        <div>
+            <p>Start year:
+                <input class="year" type="text" id="start" pattern="^(19|20)\d{2}" value="">
+                <br><br>
+                <input type="range" id="startRange" min="1901" max="2018">
+            </p>
 
-                    <p>End year:
-                        <input class="year" type="text" id="end" pattern="^(19|20)\d{2}" value="">
-                        <br><br>
-                        <input type="range" id="endRange" min="1901" max="2018">
-                    </p>
-                </td>
+            <p>End year:
+                <input class="year" type="text" id="end" pattern="^(19|20)\d{2}" value="">
+                <br><br>
+                <input type="range" id="endRange" min="1901" max="2018">
+            </p>
+        </div>
 
-                <td class="borderbox">
-                    <select id="category">
-                        <option value="">All categories</option>
-                        <option value="medicine">Medicine</option>
-                        <option value="literature">Literature</option>
-                        <option value="peace">Peace</option>
-                        <option value="physics">Physics</option>
-                        <option value="chemistry">Chemistry</option>
-                        <option value="economics">Economics</option>
-                    </select>
-                </td>
+        <div class="vert-center ">
+            <select id="category">
+                <option value="">All categories</option>
+                <option value="medicine">Medicine</option>
+                <option value="literature">Literature</option>
+                <option value="peace">Peace</option>
+                <option value="physics">Physics</option>
+                <option value="chemistry">Chemistry</option>
+                <option value="economics">Economics</option>
+            </select>
+        </div>
 
-                <td class="borderbox">
-                    <p>Country of birth:
-                        <input type=text id="country"></p>
-                </td>
+        <div class="vert-center">
+            <div>
+                <label for="country">Country of birth:</label>
+            </div>
+            <input type=text id="country">
+        </div>
 
-                <td class="borderbox gendercol">
-                    <p>
-                        <input type="radio" name="gender" value="male" id="gendermale"> Male
-                        <input type="radio" name="gender" value="female" id="genderfemale"> Female
-                        <input type="radio" name="gender" value="" id="allgender"> All
-                    </p>
-                </td>
-            </tr>
-
-            <tr>
-                <td class="borderbox">
-                    <button id="submitBtn">Submit</button>
-                </td>
-            </tr>
-        </table>
+        <div class="vert-center">
+            <input type="radio" name="gender" value="male" id="gendermale"> Male
+            <input type="radio" name="gender" value="female" id="genderfemale"> Female
+            <input type="radio" name="gender" value="" id="allgender"> All
+        </div>
     </div>
 
+    <div class=" filter-container">
+        <button id="submitBtn">Submit</button>
+    </div>
 
     <!--div to display results-->
-    <div class="answers">
-        <p id="id04"></p>
-    </div>
+    <div id="display"></div>
 
     <script src="./nobelWinners.js" type="text/javascript"></script>
     <script src="./main.js" type="text/javascript"></script>

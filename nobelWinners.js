@@ -18,6 +18,7 @@ class NobelWinners {
     }
 
     load(jsonString) {
+        console.log("Parse JSON");
         this._laureates = JSON.parse(jsonString).laureates;
         this._loaded = true;
     }
@@ -118,9 +119,8 @@ class NobelWinners {
             return NobelWinners._filterYear(laureate, this._filterObj);
         });
         if (this._filterObj.category != "")
-            laureateArr = laureateArr.filter((laureate) => {
-                return NobelWinners._filterCategory(laureate, this._filterObj);
-            });
+            laureateArr = laureateArr.filter(laureate =>
+                NobelWinners._filterCategory(laureate, this._filterObj));
         if (this._filterObj.country != "")
             laureateArr = laureateArr.filter((laureate) => {
                 let regex = new RegExp(this._filterObj.country, 'gi');
@@ -128,10 +128,9 @@ class NobelWinners {
                     laureate.bornCountry.match(regex) != null;
             }, this);
         if (this._filterObj.gender != "") {
-            laureateArr = laureateArr.filter(function(laureate) {
-                return (this._filterObj.gender == "m" && laureate.gender == "male") ||
-                    (this._filterObj.gender == "f" && laureate.gender == "female")
-            }, this);
+            laureateArr = laureateArr.filter(laureate =>
+                (this._filterObj.gender == "m" && laureate.gender == "male") ||
+                (this._filterObj.gender == "f" && laureate.gender == "female"), this);
         }
         return laureateArr;
     };
@@ -145,13 +144,11 @@ class NobelWinners {
         xmlhttp.open("GET", fileName, true);
         xmlhttp.send();
         xmlhttp.onreadystatechange = function() {
-            if (this.readyState != 4)
-                return;
-            if (this.status != 200) {
-                alert(this.status + ': ' + fileName + " " + this.statusText);
-            } else {
-                console.log("Parse JSON");
-                nobelWinners.load(this.responseText);
+            if (this.readyState == 4) {
+                if (this.status != 200)
+                    alert(this.status + ': ' + fileName + " " + this.statusText);
+                else
+                    nobelWinners.load(this.responseText);
             }
         }
     }

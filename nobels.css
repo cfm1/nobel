@@ -1,53 +1,53 @@
+h1 {
+    text-align: center;
+}
+
+h2 {
+    text-align: center;
+    font-size: 1.2em;
+    font-style: italic;
+    font-weight: normal;
+}
+
+[type="radio"] {
+    margin: 5px 5px;
+}
+
+.vert-center {
+    display: flex;
+    align-items: center;
+}
+
+.filter-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.filter-container>div {
+    margin: 1px;
+    padding: 10px 10px;
+    border: solid;
+    border-collapse: collapse;
+    font-family: Merriweather;
+    font-size: 14px;
+}
+
+.filter-container>button {
+    margin-top: 4px;
+    padding: 10px 10px;
+    font-family: Merriweather;
+    font-size: 14px;
+}
+
 .year {
     max-width: 3em;
 }
 
-.gendercol {
-    visibility: hidden;
-    border: none;
-}
-
-.tg {
-    font-family: Merriweather;
-    font-size: 14px;
-    padding: 10px 10px;
-    overflow: hidden;
-}
-
-.top {
-    border: none;
-}
-
-.tg th {
-    font-family: Raleway;
-    font-size: 50px;
-    font-weight: normal;
-    padding: 10px 5px;
-    overflow: hidden;
-    word-break: normal;
-}
-
-.borderbox {
-    color: black;
-    border: solid;
-    border-collapse: collapse;
-}
-
-.tab {
+#display {
     position: relative;
-    display: block;
-    margin-left: 25%;
-    padding-top: 10px;
-    border-collapse: collapse;
-}
-
-.tab td {
-    padding: 10px;
-}
-
-.answers {
-    position: relative;
-    margin-left: 15%
+    margin-left: 10%;
+    overflow-x: auto;
 }
 
 .resultstable {
@@ -79,9 +79,9 @@ td {
 
 .moreinfo {
     text-align: left;
-    width: 20em;
+    width: 15em;
 }
 
 .resultname {
-    width: 20em;
+    width: 15em;
 }
