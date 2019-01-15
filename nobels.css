@@ -1,16 +1,24 @@
 h1 {
     text-align: center;
+    margin-bottom: 0px;
 }
 
-h2 {
+.subheading {
     text-align: center;
+    margin-top: 0px;
     font-size: 1.2em;
     font-style: italic;
     font-weight: normal;
 }
 
 [type="radio"] {
-    margin: 5px 5px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.rbuttons {
+    display: inline-flex;
+    flex-flow: column;
 }
 
 .vert-center {
@@ -18,8 +26,20 @@ h2 {
     align-items: center;
 }
 
+.textbtn {
+    border: none;
+    background-color: inherit;
+    margin: 1px 1px;
+    padding: 1px 1px;
+    font-size: 18px;
+    color: blue;
+    cursor: pointer;
+    display: inline-block;
+    outline: none;
+}
+
 .filter-container {
-    display: flex;
+    display: none;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -44,7 +64,7 @@ h2 {
     max-width: 3em;
 }
 
-#display {
+#results {
     position: relative;
     margin-left: 10%;
     overflow-x: auto;

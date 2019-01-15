@@ -2,7 +2,9 @@
     'use strict'
 
     let nobelWinners = new NobelWinners("nobelWinners.json");
-    let display = null;
+    let results = null;
+    let filterBtn = null;
+    let filterCtnr = null;
 
     if (document.readyState === "loading")
         document.addEventListener("DOMContentLoaded", init);
@@ -10,7 +12,10 @@
         init();
 
     function init() {
-        display = document.getElementById("display");
+        results = document.getElementById("results");
+        filterBtn = document.getElementById("filterBtn");
+        filterCtnr = document.getElementById("filter-ctnr");
+
         let start = document.getElementById("start");
         let startRange = document.getElementById("startRange");
         start.addEventListener("change", () => {
@@ -31,28 +36,34 @@
             end.value = endRange.value;
         }, false);
 
-        let submit = document.getElementById("submitBtn");
-        submit.addEventListener("click", () => {
-            if (checkUserInput(start, end)) {
-                doSubmit(start, end)
-            }
+        filterBtn.addEventListener("click", () => {
+            if (filterCtnr.style.display == "flex" && checkUserInput(start, end))
+                doSubmit(start, end);
+            toggleFilterCtnr();
         }, false);
+        filterBtn.dispatchEvent(new Event('click'));
+    }
+
+    function toggleFilterCtnr() {
+        if (filterCtnr.style.display != "flex")
+            filterCtnr.style.display = "flex";
+        else
+            filterCtnr.style.display = "";
     }
 
     function checkUserInput(start, end) {
         let isValid = true;
         if (!validateYear(start)) {
-            display.textContent = "Invalid Start Year";
+            results.textContent = "Invalid Start Year";
             isValid = false;
         }
         if (!validateYear(end)) {
-            display.textContent = "Invalid End Year";
+            results.textContent = "Invalid End Year";
             isValid = false;
         }
 
-
         if (isValid && parseInt(start.value) > parseInt(end.value)) {
-            display.textContent = "End year must be later than start year"
+            results.textContent = "End year must be later than start year"
             isValid = false
         }
         return isValid;
@@ -60,7 +71,7 @@
 
     function doSubmit(start, end) {
         if (!nobelWinners.isLoaded()) {
-            display.textContent = "Laureate data not loaded";
+            results.textContent = "Laureate data not loaded";
             return;
         }
 
@@ -89,13 +100,13 @@
             let filteredArr =
                 nobelWinners.filterLaureates();
             if (filteredArr.length == 0)
-                display.textContent = "No laureates match these criteria";
+                results.textContent = "No laureates match these criteria";
             else {
                 let prizeArr = nobelWinners.buildPrizeArray(filteredArr);
-                while (display.hasChildNodes()) {
-                    display.removeChild(display.lastChild);
+                while (results.hasChildNodes()) {
+                    results.removeChild(results.lastChild);
                 }
-                display.appendChild(nobelWinners.buildPrizeTable(prizeArr));
+                results.appendChild(nobelWinners.buildPrizeTable(prizeArr));
             }
         }
     }
@@ -103,7 +114,7 @@
     function validateYear(yearEl) {
         let isValid = true;
         if (yearEl.checkValidity() == false) {
-            display.textContent = "Invalid Year";
+            results.textContent = "Invalid Year";
             isValid = false;
         }
         return isValid;
