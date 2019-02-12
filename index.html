@@ -4,37 +4,29 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width" initial-scale="1.0">
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inconsolata|Tangerine|Krub|Raleway|Merriweather">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet">
     <link rel="stylesheet" href="./normalize.css">
-    <link rel="stylesheet" type="text/css" href="./nobels.css">
+    <link rel="stylesheet" href="./nobels-filter.css">
+    <link rel="stylesheet" href="./nobels.css">
 </head>
 
-
-<!-- <head>
-    <script src="./laureates.js" type="text/javascript"></script>
-</head> -->
-
 <body>
-    <h1> Nobel Laureates</h1>
+    <h1 class="nobels-heading"> Nobel Laureates</h1>
+    <!-- START display toggled  -->
     <div id="filter-ctnr" class="filter-container">
-        <div>
+        <div class="filter-container-block">
             <p>Start year:
                 <input class="year" type="text" id="start" pattern="^(19|20)\d{2}" value="">
-                <br><br>
-                <input type="range" id="startRange" min="1901" max="2018">
             </p>
-
+            <input type="range" id="startRange" min="1901" max="2018">
+        </div>
+        <div class="filter-container-block">
             <p>End year:
                 <input class="year" type="text" id="end" pattern="^(19|20)\d{2}" value="">
-                <br><br>
-                <input type="range" id="endRange" min="1901" max="2018">
             </p>
+            <input type="range" id="endRange" min="1901" max="2018">
         </div>
 
-
-        <div class="vert-center ">
+        <div class="filter-container-block">
             <select id="category">
                 <option value="">All categories</option>
                 <option value="medicine">Medicine</option>
@@ -46,35 +38,32 @@
             </select>
         </div>
 
-        <div class="vert-center">
-            <div>
-                <label for="country">Country of birth:</label>
-            </div>
+        <div class="filter-container-block">
+            <span><input type="radio" name="gender" value="m" id="gendermale">
+                    <label for="gendermale">Male</label></span>
+            <span> <input type="radio" name="gender" value="f" id="genderfemale">
+                    <label for="genderfemale">Female</label> </span>
+            <span><input type="radio" name="gender" value="" id="allgender">
+                    <label for="gender">All</label></span>
+        </div>
+
+        <div class="filter-container-block">
+            <label for="country">Born in: </label>
             <input type=text id="country">
         </div>
 
-        <div class="vert-center">
-            <div class=rbuttons>
-                <span><input type="radio" name="gender" value="m" id="gendermale">
-                <label for="gendermale">Male</label></span>
-                <span> <input type="radio" name="gender" value="f" id="genderfemale">
-                <label for="genderfemale">Female</label> </span>
-                <span><input type="radio" name="gender" value="" id="allgender">
-                <label for="gender">All</label></span>
-            </div>
-        </div>
     </div>
-
-    <div class="subheading">
+    <!-- END display toggled  -->
+    <div class="nobels-subheading">
         This page displays all nobel laureates from 1901, the year of the award's foundation, to 2018.(
-        <span><button class=textbtn id="filterBtn">Filter)</button> </span>
+        <span><button class=filter-btn id="filterBtn">Filter</button>)</span>
     </div>
-
 
     <div id="results"></div>
 
-    <script src="./nobelWinners.js" type="text/javascript"></script>
-    <script src="./main.js" type="text/javascript"></script>
+    <script src="./nobelWinners.js" type="text/javascript" async></script>
+    <script src="./main.js" type="text/javascript" async></script>
+
 </body>
 
 </html>

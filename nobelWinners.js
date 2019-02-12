@@ -73,14 +73,14 @@ class NobelWinners {
 
     buildPrizeTable(prizeArr) {
         let table = document.createElement("table");
-        table.setAttribute("class", "resultstable");
+        table.setAttribute("class", "nobels-table");
 
         let tHead = table.createTHead();
         let tr = tHead.insertRow(0);
 
         tr.appendChild(NobelWinners._createTH("Year"));
         let thName = tr.appendChild(NobelWinners._createTH("Name"));
-        thName.setAttribute("class", "resultname");
+        thName.classList.add("nobelname");
         tr.appendChild(NobelWinners._createTH("Category"));
         tr.appendChild(NobelWinners._createTH("Gender"));
         tr.appendChild(NobelWinners._createTH("Born in"));
@@ -88,16 +88,19 @@ class NobelWinners {
 
         for (let i = 0; i < prizeArr.length; i++) {
             let tr = table.insertRow(i + 1);
-            tr.insertCell(0).textContent = prizeArr[i].year;
-            let nm = tr.insertCell(1);
-            nm.setAttribute("class", "resultname");
-            nm.textContent = prizeArr[i].laureate.firstname + " " +
+            let td = NobelWinners._insertCell(tr, 0);
+            td.textContent = prizeArr[i].year;
+            td = NobelWinners._insertCell(tr, 1);
+            td.textContent = prizeArr[i].laureate.firstname + " " +
                 prizeArr[i].laureate.surname;
-            tr.insertCell(2).textContent = prizeArr[i].category;
-            tr.insertCell(3).textContent = prizeArr[i].laureate.gender;
-            tr.insertCell(4).textContent = prizeArr[i].laureate.bornCountry;
+            td = NobelWinners._insertCell(tr, 2);
+            td.textContent = prizeArr[i].category;
+            td = NobelWinners._insertCell(tr, 3);
+            td.textContent = prizeArr[i].laureate.gender;
+            td = NobelWinners._insertCell(tr, 4);
+            td.textContent = prizeArr[i].laureate.bornCountry;
 
-            let tdMore = tr.insertCell(5);
+            let tdMore = NobelWinners._insertCell(tr, 5);
             let detailEl = document.createElement("details");
             tdMore.appendChild(detailEl);
             let summaryEl = document.createElement("summary");
@@ -148,14 +151,22 @@ class NobelWinners {
                 if (this.status != 200)
                     alert(this.status + ': ' + fileName + " " + this.statusText);
                 else
+                if (!nobelWinners.isLoaded())
                     nobelWinners.load(this.responseText);
             }
         }
     }
 
+    static _insertCell(row, n) {
+        let td = row.insertCell(n);
+        td.classList.add("nobels-table-cell");
+        return td;
+    }
+
     static _createTH(content) {
         let th = document.createElement("th");
         th.textContent = content;
+        th.classList.add("nobels-table-cell", "nobels-table-hdrcell");
         return th;
     }
 
@@ -215,8 +226,3 @@ function _moreInformation(laureate, prizeIndex) {
     }
     return moreElmnt;
 };
-
-let winners = new NobelWinners("nobelWinners.json");
-// if (lc.filterObj.isChanged(0, 0, "", "", ""))
-console.log("Changed = yes");
-// else
