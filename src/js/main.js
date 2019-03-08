@@ -1,10 +1,12 @@
-(function(globalObj) {
-    'use strict'
+// eslint-disable-next-line no-unused-vars
+(function(_globalObj) {
+    "use strict";
 
-    let nobelWinners = new NobelWinners("nobelWinners.json");
-    let results = null;
-    let filterBtn = null;
-    let filterCtnr = null;
+    let laureateArray = [],
+        nobelWinners = null,
+        results = null,
+        filterBtn = null,
+        filterCtnr = null;
 
     if (document.readyState === "loading")
         document.addEventListener("DOMContentLoaded", init);
@@ -41,7 +43,25 @@
                 doSubmit(start, end);
             toggleFilterCtnr();
         }, false);
-        filterBtn.dispatchEvent(new Event('click'));
+        filterBtn.dispatchEvent(new Event("click"));
+        getLaureateArray("./assets/nobelWinners.json");
+    }
+
+    function getLaureateArray(fileName) {
+        let xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", fileName, true);
+        xmlhttp.send();
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4) {
+                if (this.status != 200)
+                    alert(this.status + ": " + fileName + " " + this.statusText);
+                else {
+                    // eslint-disable-next-line no-console
+                    console.log("Parse JSON");
+                    laureateArray = JSON.parse(this.responseText).laureates;
+                }
+            }
+        };
     }
 
     function toggleFilterCtnr() {
@@ -63,37 +83,40 @@
         }
 
         if (isValid && parseInt(start.value) > parseInt(end.value)) {
-            results.textContent = "End year must be later than start year"
-            isValid = false
+            results.textContent = "End year must be later than start year";
+            isValid = false;
         }
         return isValid;
     }
 
     function doSubmit(start, end) {
-        if (!nobelWinners.isLoaded()) {
-            results.textContent = "Laureate data not loaded";
-            return;
-        }
-
         if (end.value == "") {
             end.value = 2018;
-            end.dispatchEvent(new Event('change'));
+            end.dispatchEvent(new Event("change"));
         }
 
         if (start.value == "") {
             start.value = end.value;
-            start.dispatchEvent(new Event('change'));
+            start.dispatchEvent(new Event("change"));
         }
 
         let category = document.getElementById("category").value;
         let country = document.getElementById("country").value;
         let gender = "";
-        if (document.getElementById('gendermale').checked)
+        if (document.getElementById("gendermale").checked)
             gender = "m";
         else {
-            if (document.getElementById('genderfemale').checked)
+            if (document.getElementById("genderfemale").checked)
                 gender = "f";
         }
+
+        if (laureateArray.length == 0) {
+            results.textContent = "Laureate data not loaded";
+            return;
+        }
+        if (nobelWinners == null)
+        // eslint-disable-next-line no-undef
+            nobelWinners = new NobelWinners(laureateArray);
 
         if (nobelWinners.isFilterChanged(start.value, end.value, category, country, gender)) {
             nobelWinners.setFilterObj(start.value, end.value, category, country, gender);
@@ -120,4 +143,4 @@
         return isValid;
     }
 
-}(this))
+}(this));

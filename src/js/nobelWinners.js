@@ -1,26 +1,14 @@
+// eslint-disable-next-line no-unused-vars
 class NobelWinners {
-
-    constructor(fileName) {
-        this._laureates = [];
-        this._loaded = false;
+    constructor(laureateArray) {
+        this._laureates = laureateArray;
         this._filterObj = {
-            'start': 0,
-            'end': 0,
-            'category': "",
-            'country': "",
-            'gender': ""
-        }
-        this._createXHR(fileName);
-    }
-
-    isLoaded() {
-        return this._loaded;
-    }
-
-    load(jsonString) {
-        console.log("Parse JSON");
-        this._laureates = JSON.parse(jsonString).laureates;
-        this._loaded = true;
+            "start": 0,
+            "end": 0,
+            "category": "",
+            "country": "",
+            "gender": ""
+        };
     }
 
     isFilterChanged(startYr, endYr, category, country, gender) {
@@ -67,7 +55,7 @@ class NobelWinners {
                     prizeArr.push(lPrize);
                 }
             }
-        };
+        }
         return prizeArr.sort((a, b) => a.year - b.year);
     }
 
@@ -114,7 +102,7 @@ class NobelWinners {
                 summaryEl.textContent = "N/A";
         }
         return table;
-    };
+    }
 
     filterLaureates() {
         let laureateArr = this._laureates;
@@ -126,8 +114,8 @@ class NobelWinners {
                 NobelWinners._filterCategory(laureate, this._filterObj));
         if (this._filterObj.country != "")
             laureateArr = laureateArr.filter((laureate) => {
-                let regex = new RegExp(this._filterObj.country, 'gi');
-                return laureate.hasOwnProperty('bornCountry') &&
+                let regex = new RegExp(this._filterObj.country, "gi");
+                return laureate.hasOwnProperty("bornCountry") &&
                     laureate.bornCountry.match(regex) != null;
             }, this);
         if (this._filterObj.gender != "") {
@@ -136,26 +124,10 @@ class NobelWinners {
                 (this._filterObj.gender == "f" && laureate.gender == "female"), this);
         }
         return laureateArr;
-    };
+    }
 
 
     //************************************* PRIVATE METHODS(..But Not really) *************************/
-
-    _createXHR(fileName) {
-        let nobelWinners = this;
-        let xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", fileName, true);
-        xmlhttp.send();
-        xmlhttp.onreadystatechange = function() {
-            if (this.readyState == 4) {
-                if (this.status != 200)
-                    alert(this.status + ': ' + fileName + " " + this.statusText);
-                else
-                if (!nobelWinners.isLoaded())
-                    nobelWinners.load(this.responseText);
-            }
-        }
-    }
 
     static _insertCell(row, n) {
         let td = row.insertCell(n);
@@ -178,7 +150,7 @@ class NobelWinners {
                 accept = true;
         }
         return accept;
-    };
+    }
 
     static _filterCategory(laureate, filterObj) {
         let accept = false;
@@ -187,7 +159,7 @@ class NobelWinners {
                 accept = true;
         }
         return accept;
-    };
+    }
 
 
 }
@@ -200,7 +172,7 @@ function _moreInformation(laureate, prizeIndex) {
         infoElmnt.setAttribute("class", "moreInfo");
         if (laureate.born != "0000-00-00")
             infoElmnt.appendChild(document.createTextNode("Year of birth: " + laureate.born));
-        if (laureate.hasOwnProperty('bornCity')) {
+        if (laureate.hasOwnProperty("bornCity")) {
             infoElmnt.appendChild(document.createElement("br"));
             infoElmnt.appendChild(document.createTextNode("City of birth: " + laureate.bornCity));
         }
@@ -208,7 +180,7 @@ function _moreInformation(laureate, prizeIndex) {
             infoElmnt.appendChild(document.createElement("br"));
             infoElmnt.appendChild(document.createTextNode("Died in:  " + laureate.died));
         }
-        if (prize.hasOwnProperty('motivation')) {
+        if (prize.hasOwnProperty("motivation")) {
             infoElmnt.appendChild(document.createElement("br"));
             infoElmnt.appendChild(document.createTextNode("Motivation: " + prize.motivation));
         }
@@ -220,9 +192,9 @@ function _moreInformation(laureate, prizeIndex) {
                 infoElmnt.appendChild(document.createElement("br"));
                 infoElmnt.appendChild(document.createTextNode("Affiliation: " + nm + ", " + city));
             }
-        };
+        }
         if (infoElmnt.textContent && infoElmnt.textContent.length > 0)
             moreElmnt = infoElmnt;
     }
     return moreElmnt;
-};
+}
