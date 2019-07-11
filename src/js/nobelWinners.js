@@ -1,40 +1,62 @@
-// eslint-disable-next-line no-unused-vars
-class NobelWinners {
+export default class NobelWinners {
+
+    static buildCountries(laureateArr) {
+        let countries = [];
+        for (let i = 0; i < laureateArr.length; i++) {
+            if (laureateArr[i].hasOwnProperty("bornCountry")) {
+                let bCountry = _getNowCountry(
+                    new String(laureateArr[i].bornCountry).trim());
+                if (countries.indexOf(bCountry) == -1)
+                    countries.push(bCountry);
+            }
+        }
+        return countries.sort();
+    }
+
+
     constructor(laureateArray) {
-        this._laureates = laureateArray;
-        this._filterObj = {
+        this.getLaureates = function() {
+            return laureateArray;
+        };
+
+        let _filterObj = {
             "start": 0,
             "end": 0,
             "category": "",
             "country": "",
             "gender": ""
         };
+        this.getFilterObj = function() {
+            return _filterObj;
+        };
+
+        this.setFilterObj = function(startYr, endYr, category, country, gender) {
+            _filterObj.start = parseInt(startYr);
+            _filterObj.end = parseInt(endYr);
+            _filterObj.category = category;
+            _filterObj.country = country;
+            _filterObj.gender = gender;
+        };
+
+        this.isFilterChanged = function(startYr, endYr, category, country, gender) {
+            return startYr != _filterObj.start ||
+                endYr != _filterObj.end ||
+                category != _filterObj.category ||
+                country != _filterObj.country ||
+                gender != _filterObj.gender;
+        };
+
+        const _countries = NobelWinners.buildCountries(laureateArray);
+        this.getCountries = function() {
+            return _countries;
+        };
     }
-
-    isFilterChanged(startYr, endYr, category, country, gender) {
-        return startYr != this._filterObj.start ||
-            endYr != this._filterObj.end ||
-            category != this._filterObj.category ||
-            country != this._filterObj.country ||
-            gender != this._filterObj.gender;
-    }
-
-
-    setFilterObj(startYr, endYr, category, country, gender) {
-        this._filterObj.start = parseInt(startYr);
-        this._filterObj.end = parseInt(endYr);
-        this._filterObj.category = category;
-        this._filterObj.country = country;
-        this._filterObj.gender = gender;
-    }
-
-
 
     getLaureate(laureateId) {
         let result = "";
-        for (let i = 0; i < this._laureates.length; i++) {
-            if (this._laureates[i].id == laureateId)
-                result = this._laureates[i];
+        for (let i = 0; i < this.getLaureates().length; i++) {
+            if (this.getLaureates()[i].id == laureateId)
+                result = this.getLaureates()[i];
         }
         return result;
     }
@@ -43,10 +65,10 @@ class NobelWinners {
         let prizeArr = [];
         for (let i = 0; i < laureateArr.length; i++) {
             for (let n = 0; n < laureateArr[i].prizes.length; n++) {
-                if (laureateArr[i].prizes[n].year >= this._filterObj.start &&
-                    laureateArr[i].prizes[n].year <= this._filterObj.end &&
-                    (this._filterObj.category == "" ||
-                        this._filterObj.category == laureateArr[i].prizes[n].category)) {
+                if (laureateArr[i].prizes[n].year >= this.getFilterObj().start &&
+                    laureateArr[i].prizes[n].year <= this.getFilterObj().end &&
+                    (this.getFilterObj().category == "" ||
+                        this.getFilterObj().category == laureateArr[i].prizes[n].category)) {
                     let lPrize = {};
                     lPrize.laureate = laureateArr[i];
                     lPrize.prizeIndex = n;
@@ -61,34 +83,41 @@ class NobelWinners {
 
     buildPrizeTable(prizeArr) {
         let table = document.createElement("table");
-        table.setAttribute("class", "nobels-table");
+        table.setAttribute("class", "nbl-table");
+        let tBody = document.createElement("tbody");
+        let tr = table.insertRow(0);
+        let td = tr.insertCell(0);
+        td.appendChild(tBody);
 
         let tHead = table.createTHead();
-        let tr = tHead.insertRow(0);
-
-        tr.appendChild(NobelWinners._createTH("Year"));
-        let thName = tr.appendChild(NobelWinners._createTH("Name"));
-        thName.classList.add("nobelname");
-        tr.appendChild(NobelWinners._createTH("Category"));
-        tr.appendChild(NobelWinners._createTH("Gender"));
-        tr.appendChild(NobelWinners._createTH("Born in"));
-        tr.appendChild(NobelWinners._createTH("Details"));
+        tr = tHead.insertRow(0);
+        tr.appendChild(_createHdrCell("Year", "nbl-year"));
+        tr.appendChild(_createHdrCell("Name", "nbl-name"));
+        tr.appendChild(_createHdrCell("Category", "nbl-category"));
+        tr.appendChild(_createHdrCell("Born in", "nbl-country"));
+        tr.appendChild(_createHdrCell("Gender", "nbl-gender"));
+        tr.appendChild(_createHdrCell("More ...", "nbl-moreinfo"));
 
         for (let i = 0; i < prizeArr.length; i++) {
             let tr = table.insertRow(i + 1);
-            let td = NobelWinners._insertCell(tr, 0);
+
+            let td = _createCell(tr, 0, "nbl-year");
             td.textContent = prizeArr[i].year;
-            td = NobelWinners._insertCell(tr, 1);
+
+            td = _createCell(tr, 1, "nbl-name");
             td.textContent = prizeArr[i].laureate.firstname + " " +
                 prizeArr[i].laureate.surname;
-            td = NobelWinners._insertCell(tr, 2);
+
+            td = _createCell(tr, 2, "nbl-category");
             td.textContent = prizeArr[i].category;
-            td = NobelWinners._insertCell(tr, 3);
-            td.textContent = prizeArr[i].laureate.gender;
-            td = NobelWinners._insertCell(tr, 4);
+
+            td = _createCell(tr, 3, "nbl-country");
             td.textContent = prizeArr[i].laureate.bornCountry;
 
-            let tdMore = NobelWinners._insertCell(tr, 5);
+            td = _createCell(tr, 4, "nbl-gender");
+            td.textContent = prizeArr[i].laureate.gender;
+
+            let tdMore = _createCell(tr, 5, "nbl-moreinfo");
             let detailEl = document.createElement("details");
             tdMore.appendChild(detailEl);
             let summaryEl = document.createElement("summary");
@@ -96,7 +125,7 @@ class NobelWinners {
             let laureate = this.getLaureate(prizeArr[i].laureate.id);
             let moreDetails = _moreInformation(laureate, prizeArr[i].prizeIndex);
             if (moreDetails instanceof HTMLElement) {
-                summaryEl.textContent = "More...";
+                summaryEl.textContent = "...";
                 detailEl.appendChild(moreDetails);
             } else
                 summaryEl.textContent = "N/A";
@@ -105,71 +134,81 @@ class NobelWinners {
     }
 
     filterLaureates() {
-        let laureateArr = this._laureates;
-        laureateArr = laureateArr.filter((laureate) => {
-            return NobelWinners._filterYear(laureate, this._filterObj);
-        });
-        if (this._filterObj.category != "")
+        let laureateArr = this.getLaureates();
+        laureateArr = laureateArr.filter(laureate =>
+            _filterYear(laureate, this.getFilterObj()));
+        if (this.getFilterObj().category != "")
             laureateArr = laureateArr.filter(laureate =>
-                NobelWinners._filterCategory(laureate, this._filterObj));
-        if (this._filterObj.country != "")
-            laureateArr = laureateArr.filter((laureate) => {
-                let regex = new RegExp(this._filterObj.country, "gi");
-                return laureate.hasOwnProperty("bornCountry") &&
-                    laureate.bornCountry.match(regex) != null;
+                _filterCategory(laureate, this.getFilterObj()));
+        if (this.getFilterObj().country != "")
+            laureateArr = laureateArr.filter(laureate => {
+                if (laureate.hasOwnProperty("bornCountry")) {
+                    let country = _getNowCountry(laureate.bornCountry);
+                    return this.getFilterObj().country === country;
+                }
             }, this);
-        if (this._filterObj.gender != "") {
+        if (this.getFilterObj().gender != "") {
             laureateArr = laureateArr.filter(laureate =>
-                (this._filterObj.gender == "m" && laureate.gender == "male") ||
-                (this._filterObj.gender == "f" && laureate.gender == "female"), this);
+                (this.getFilterObj().gender == "m" && laureate.gender == "male") ||
+                (this.getFilterObj().gender == "f" && laureate.gender == "female"), this);
         }
         return laureateArr;
     }
-
-
-    //************************************* PRIVATE METHODS(..But Not really) *************************/
-
-    static _insertCell(row, n) {
-        let td = row.insertCell(n);
-        td.classList.add("nobels-table-cell");
-        return td;
-    }
-
-    static _createTH(content) {
-        let th = document.createElement("th");
-        th.textContent = content;
-        th.classList.add("nobels-table-cell", "nobels-table-hdrcell");
-        return th;
-    }
-
-    static _filterYear(laureate, filterObj) {
-        let accept = false;
-        for (let n = 0; n < laureate.prizes.length; n++) {
-            let y = laureate.prizes[n].year;
-            if (y >= filterObj.start && y <= filterObj.end)
-                accept = true;
-        }
-        return accept;
-    }
-
-    static _filterCategory(laureate, filterObj) {
-        let accept = false;
-        for (let n = 0; n < laureate.prizes.length; n++) {
-            if (laureate.prizes[n].category == filterObj.category)
-                accept = true;
-        }
-        return accept;
-    }
-
-
 }
+
+
+//**************************************************************************** */
+
+function _getNowCountry(bornCountry) {
+    let country = bornCountry;
+    let idx = country.lastIndexOf("(now");
+    if (idx != -1) {
+        let end = country.lastIndexOf(")");
+        country = country.substr(idx + 5, end - idx - 5);
+    }
+    return country;
+}
+
+function _createCell(row, n, className) {
+    let td = row.insertCell(n);
+    td.classList.add("nbl-table-cell");
+    td.classList.add(className);
+    return td;
+}
+
+function _createHdrCell(content, className) {
+    let th = document.createElement("th");
+    th.textContent = content;
+    th.classList.add("nbl-table-cell", "nbl-table-hdrcell");
+    th.classList.add(className);
+    return th;
+}
+
+function _filterYear(laureate, filterObj) {
+    let accept = false;
+    for (let n = 0; n < laureate.prizes.length; n++) {
+        let y = laureate.prizes[n].year;
+        if (y >= filterObj.start && y <= filterObj.end)
+            accept = true;
+    }
+    return accept;
+}
+
+function _filterCategory(laureate, filterObj) {
+    let accept = false;
+    for (let n = 0; n < laureate.prizes.length; n++) {
+        if (laureate.prizes[n].category == filterObj.category)
+            accept = true;
+    }
+    return accept;
+}
+
 
 function _moreInformation(laureate, prizeIndex) {
     let moreElmnt = {};
     if (laureate != "") {
         let prize = laureate.prizes[prizeIndex];
         let infoElmnt = document.createElement("p");
-        infoElmnt.setAttribute("class", "moreInfo");
         if (laureate.born != "0000-00-00")
             infoElmnt.appendChild(document.createTextNode("Year of birth: " + laureate.born));
         if (laureate.hasOwnProperty("bornCity")) {

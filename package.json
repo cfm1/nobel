@@ -1,0 +1,29 @@
+{
+    "name": "nobel",
+    "version": "2.0.0",
+    "description": "Nobel Laureates Project",
+    "main": "src/js/main.js",
+    "scripts": {
+        "env": "env",
+        "lint": "eslint .",
+        "pretest": "eslint .",
+        "test": "mocha ./test/*.js --require esm"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/cfm1/nobel.git"
+    },
+    "author": "cfm",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/cfm1/nobel/issues"
+    },
+    "homepage": "https://github.com/cfm1/nobel#readme",
+    "dependencies": {},
+    "devDependencies": {
+        "chai": "^4.2.0",
+        "eslint": "^5.15.1",
+        "esm": "^3.2.25",
+        "mocha": "^6.1.4"
+    }
+}

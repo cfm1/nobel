@@ -1,29 +1,51 @@
-@import url("https://fonts.googleapis.com/css?family=Inconsolata|Tangerine|Krub|Raleway|Merriweather");
-@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed");
-.filter-container {
-    display: none;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: stretch;
-    font-family: Merriweather;
-    font-size: 14px;
-}
+/* @import url("https://fonts.googleapis.com/css?family=Inconsolata|Tangerine|Krub|Raleway|Merriweather");
+@import url("https://fonts.googleapis.com/css?family=Roboto+Condensed"); */
 
-.filter-container-block {
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: space-evenly;
-    margin: 1px;
-    padding: 10px 10px;
-    border: solid;
-    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1));
+input[type="number"] {
+    width: 4em;
 }
 
 input[type="radio"] {
-    margin-top: 15px;
+    margin-left: 5px;
 }
 
-.year {
-    max-width: 3em;
+.nbl-filter-view {
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    position: relative;
+    width: var(--view-width);
+    height: var(--view-height);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    background-color: rgba(255, 255, 255, 1.0);
+    background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.2));
+    border: 1px dotted rgb(235, 14, 14);
+    max-height: 600px;
+    max-width: 500px;
+}
+
+.nbl-filter-container {
+    flex-basis: 100%;
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+}
+
+.nbl-filter-container-block {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    min-height: 4rem;
+}
+
+.nbl-message {
+    min-height: 2rem;
+    max-height: 2rem;
+}
+
+.nbl-filter-year {
     text-align: right;
 }

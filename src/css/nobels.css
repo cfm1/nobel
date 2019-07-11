@@ -1,64 +1,208 @@
-.nobels-heading {
-    text-align: center;
-    margin-bottom: 0px;
-}
-
-.nobels-subheading {
-    text-align: center;
-    margin-top: 0px;
-    font-size: 1.2em;
-    font-style: italic;
-    font-weight: normal;
-}
-
-.filter-btn {
-    border: none;
-    background-color: inherit;
-    margin-left: 0px;
-    padding-left: 0px;
-    font-size: 18px;
-    color: blue;
-    cursor: pointer;
-    outline: none;
-}
-
-div#results {
-    position: relative;
-    margin-left: 10%;
-    overflow-x: auto;
-}
-
-.nobels-table {
-    border-collapse: collapse;
-    color: black;
-    padding: 10px;
-    width: 90%;
-    text-align: left;
-}
-
-.nobels-table-hdrcell {
-    background-color: rgb(235, 235, 235);
-}
-
-.nobels-table-cell {
-    text-align: left;
-    border: 1px solid rgb(190, 190, 190);
-    padding: 10px 20px;
-}
-
-.nobels-table tr:nth-child(even) td {
-    background-color: rgb(250, 250, 250);
-}
-
-.nobels-table tr:nth-child(odd) td {
-    background-color: rgb(245, 245, 245);
-}
-
-.nobelname {
-    max-width: 15em;
-}
-
-.moreinfo {
-    text-align: left;
-    width: 15em;
-}
+                      :root {
+                         scroll-behavior: smooth;
+                         font-family: 'Times New Roman', Times, serif;
+                         font-size: 100%;
+                         --hdr-height: 4.0rem;
+                         --footer-height: 2.25rem;
+                         --view-height: calc(100vh - var(--hdr-height) - var(--footer-height));
+                         --view-width: 80vw;
+                     }
+                     
+                     * {
+                         box-sizing: border-box;
+                     }
+                     
+                     html,
+                     body {
+                         height: 100%;
+                         overflow-y: hidden;
+                         overflow-x: hidden;
+                     }
+                     
+                     header {
+                         height: var(--hdr-height);
+                     }
+                     
+                     footer {
+                         height: var(--footer-height);
+                     }
+                     
+                     .nbl-hdr-0 {
+                         display: flex;
+                         flex-direction: row;
+                         align-items: center;
+                     }
+                     
+                     .nbl-hdr-0-left {
+                         display: block;
+                         flex-grow: 1;
+                         flex-shrink: 1;
+                         flex-basis: auto;
+                     }
+                     
+                     .nbl-hdr-0-center {
+                         display: block;
+                         flex-grow: 0;
+                         flex-shrink: 0;
+                         flex-basis: content;
+                     }
+                     
+                     .nbl-h1 {
+                         margin-bottom: 0px;
+                         margin-top: 0px;
+                     }
+                     
+                     .nbl-hdr-0-right {
+                         display: flex;
+                         flex-grow: 1;
+                         flex-shrink: 1;
+                         flex-basis: auto;
+                         flex-direction: row;
+                         justify-content: center;
+                     }
+                     
+                     .nbl-filter-btn {
+                         border: 1px;
+                         background: inherit;
+                         color: grey;
+                         cursor: pointer;
+                         font-size: 1.6rem;
+                     }
+                     
+                     .nbl-filter-btn:focus {
+                         color: blue;
+                         outline: 1px;
+                     }
+                     
+                     .nbl-filter-btn:hover {
+                         color: blue;
+                         outline: 1px;
+                     }
+                     
+                     .nbl-hdr-1 {
+                         text-align: center;
+                         margin-top: 0px;
+                         font-size: 1.2rem;
+                         font-style: italic;
+                         font-weight: normal;
+                     }
+                     
+                     .nbl-view-ctnr {
+                         display: flex;
+                         flex-flow: column;
+                         align-items: center;
+                     }
+                     
+                     .nbl-table-view {
+                         display: flex;
+                         flex-flow: row;
+                         position: relative;
+                         width: var(--view-width);
+                         height: var(--view-height);
+                         overflow-x: hidden;
+                         overflow-y: auto;
+                         -webkit-overflow-scrolling: touch;
+                     }
+                     
+                     .nbl-table {
+                         display: table;
+                         table-layout: fixed;
+                         width: 100%;
+                         border-collapse: collapse;
+                         color: black;
+                     }
+                     
+                     thead tr:first-child th {
+                         position: -webkit-sticky;
+                         position: sticky;
+                         top: 0;
+                     }
+                     
+                     .nbl-table-cell {
+                         text-align: left;
+                         border: 1px solid rgb(190, 190, 190);
+                         background-clip: padding-box;
+                         padding: 0.5rem 0.5rem;
+                     }
+                     
+                     .nbl-table-hdrcell {
+                         background-color: rgb(200, 200, 200);
+                         border: 1px solid rgb(0, 0, 0);
+                     }
+                     
+                     .nbl-table tr:nth-child(even) td {
+                         background-color: rgb(250, 250, 250);
+                     }
+                     
+                     .nbl-table tr:nth-child(odd) td {
+                         background-color: rgb(245, 245, 245);
+                     }
+                     
+                     .nbl-table tr:active td {
+                         background-color: lightblue;
+                         outline: 0;
+                     }
+                     
+                     .nbl-year {
+                         min-width: 3rem;
+                         width: 3rem;
+                     }
+                     
+                     .nbl-name {
+                         min-width: 11.0rem;
+                         width: 11.0rem;
+                     }
+                     
+                     .nbl-category {
+                         min-width: 5.5rem;
+                         width: 5.5rem;
+                     }
+                     
+                     .nbl-gender {
+                         min-width: 4.25rem;
+                         width: 4.25rem;
+                     }
+                     
+                     .nbl-country {
+                         min-width: 6rem;
+                         width: 6rem;
+                     }
+                     
+                     .nbl-moreinfo {
+                         min-width: 6rem;
+                         max-width: 20rem;
+                         width: 6rem;
+                     }
+                     
+                     @media (max-width: 40em) {
+                          :root {
+                             --view-width: 100vw;
+                         }
+                     }
+                     
+                     @media (max-width: 35rem) {
+                         .nbl-table-view {
+                             overflow-x: hidden;
+                         }
+                     }
+                     
+                     @media (max-width: 20rem) {
+                          :root {
+                             --view-width: 19.5rem;
+                         }
+                     }
+                     
+                     @media (max-height: 35rem) {
+                          :root {
+                             --footer-height: 0 rem;
+                         }
+                         header {
+                             --hdr-height: 1.5rem;
+                         }
+                         .nbl-hdr-1 {
+                             display: none;
+                         }
+                         .nbl-h1 {
+                             font-size: 1.2rem;
+                         }
+                     }
