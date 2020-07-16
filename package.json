@@ -20,7 +20,7 @@
     },
     "homepage": "https://github.com/cfm1/nobel#readme",
     "dependencies": {
-        "lodash": "^4.17.14"
+        "lodash": "^4.17.19"
     },
     "devDependencies": {
         "chai": "^4.2.0",
